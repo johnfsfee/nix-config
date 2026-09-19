@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+# help function
+Help() {
+    echo "Rebuilds Home-Manager and NixOS (see -s)."
+    echo
+    echo "Usage: [-h] [-s]"
+    echo "options:"
+    echo "-h     Print this help."
+    echo "-s     Rebuild NixOS."
+}
+
+# get options
+while getopts "hs" opt; do
+    case $opt in
+        h)
+            Help
+            exit
+            ;;
+        s)
+          sudo nixos-rebuild switch --flake .#"$(hostname)"
+            exit
+            ;;
+        *)
+            echo "Usage: [-h] [-s]" >&2
+            exit 1
+            ;;
+    esac
+done
+
+NIXPKGS_ALLOW_BROKEN=1 NIXPKGS_ALLOW_INSECURE=1 NIXPKGS_ALLOW_UNFREE=1 nix build --impure .#homeConfigurations."$(whoami)".activationPackage --verbose && result/activate

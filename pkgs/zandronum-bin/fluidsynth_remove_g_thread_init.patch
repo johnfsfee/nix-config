@@ -1,0 +1,10 @@
+diff --git a/src/utils/fluid_sys.c b/src/utils/fluid_sys.c
+index 5c2c0a5..e3b4f6c 100644
+--- a/src/utils/fluid_sys.c
++++ b/src/utils/fluid_sys.c
+@@ -120,7 +120,6 @@ new_fluid_cond (void)
+ {
+-  if (!g_thread_supported ()) g_thread_init (NULL);
+   return g_cond_new ();
+ }
+

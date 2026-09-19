@@ -1,0 +1,78 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 97c447424..68d6b49e0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -48,6 +48,7 @@ option(USE_LTO "Build Release builds with Link Time Optimization" 1)
+ cmake_dependent_option( USE_INTERNAL_ZLIB "Use internal zlib" ${USE_INTERNAL_LIBS} BUILD_CLIENT 0 )
+ cmake_dependent_option( USE_INTERNAL_PNG "Use internal libpng" ${USE_INTERNAL_LIBS} BUILD_CLIENT 0 )
+ cmake_dependent_option( USE_INTERNAL_CURL "Use internal libcurl" ${USE_INTERNAL_LIBS} BUILD_CLIENT 0 )
++cmake_dependent_option( USE_INTERNAL_FLTK "Use internal FLTK" 1 BUILD_CLIENT 0 )
+ cmake_dependent_option( USE_INTERNAL_JSONCPP "Use internal JsonCpp" 1 BUILD_SERVER 0 )
+ cmake_dependent_option( USE_INTERNAL_WXWIDGETS "Use internal wxWidgets" ${USE_INTERNAL_LIBS} BUILD_LAUNCHER 0 )
+ cmake_dependent_option( ENABLE_PORTMIDI "Enable portmidi support" 1 BUILD_CLIENT 0 )
+diff --git a/client/CMakeLists.txt b/client/CMakeLists.txt
+index 0559564c7..3dd5a0ee0 100644
+--- a/client/CMakeLists.txt
++++ b/client/CMakeLists.txt
+@@ -204,9 +204,28 @@ if(TARGET SDL2::SDL2 OR TARGET SDL::SDL)
+   target_link_libraries(odamex ${PNG_LIBRARY} ${ZLIB_LIBRARY} CURL::libcurl)
+   if(NOT GCONSOLE)
+     target_include_directories(odamex PRIVATE gui)
+-    target_link_libraries(odamex fltk fltk_images)
++    set(FLTK_LIBRARIES fltk fltk_images)
++    set(HAVE_FLTK_SCREEN_SCALE TRUE)
++  else()
++    set(FLTK_SKIP_OPENGL 1)
++    set(FLTK_SKIP_FORMS 1)
++    set(FLTK_SKIP_FLUID 1)
++    find_package(FLTK REQUIRED)
++    target_include_directories(odamex SYSTEM PRIVATE ${FLTK_INCLUDE_DIR})
++
++    include(CheckCXXSymbolExists)
++    set(CMAKE_REQUIRED_INCLUDES ${FLTK_INCLUDE_DIR})
++    set(CMAKE_REQUIRED_LIBRARIES ${FLTK_LIBRARIES})
++    check_cxx_symbol_exists(Fl::screen_scale "FL/Fl.H" HAVE_FLTK_SCREEN_SCALE)
++  endif()
++
++  if(HAVE_FLTK_SCREEN_SCALE)
++    target_compile_definitions(odamex PRIVATE HAVE_FLTK_SCREEN_SCALE)
+   endif()
+ 
++  target_link_libraries(odamex ${FLTK_LIBRARIES})
++ endif()
++
+   if(ENABLE_PORTMIDI)
+     target_link_libraries(odamex ${PORTMIDI_LIBRARY})
+   endif()
+diff --git a/client/gui/gui_boot.cpp b/client/gui/gui_boot.cpp
+index a50bc0857..3914f0511 100644
+--- a/client/gui/gui_boot.cpp
++++ b/client/gui/gui_boot.cpp
+@@ -575,12 +575,14 @@ static BootWindow* MakeBootWindow()
+  */
+ scannedWADs_t GUI_BootWindow()
+ {
++#ifdef HAVE_FLTK_SCREEN_SCALE
+ 	// Scale according to 1600x900.
+ 	Fl::screen_scale(0, MAX(Fl::h() / 900.0f, 1.0f));
+ 
+ 	// This feature is too clever by half, and in my experience just
+ 	// deforms the window.
+ 	Fl::keyboard_screen_scaling(0);
++#endif
+ 
+ 	BootWindow* win = MakeBootWindow();
+ 	win->initWADDirs();
+diff --git a/libraries/CMakeLists.txt b/libraries/CMakeLists.txt
+index 319bc197a..a622fbe27 100644
+--- a/libraries/CMakeLists.txt
++++ b/libraries/CMakeLists.txt
+@@ -264,7 +264,7 @@ endif()
+ 
+ ### FLTK (dep: libpng) ###
+ 
+-if(BUILD_CLIENT)
++if(BUILD_CLIENT AND USE_INTERNAL_FLTK)
+   set(_FLTK_BUILDGEN_PARAMS
+     "-DOPTION_USE_SYSTEM_LIBJPEG=OFF"
+     "-DOPTION_PRINT_SUPPORT=OFF"

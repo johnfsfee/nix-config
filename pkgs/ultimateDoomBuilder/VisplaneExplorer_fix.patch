@@ -1,0 +1,45 @@
+diff --git a/Source/Plugins/VisplaneExplorer/VPOManager.cs b/Source/Plugins/VisplaneExplorer/VPOManager.cs
+index 9d59e37..d0cca7a 100755
+--- a/Source/Plugins/VisplaneExplorer/VPOManager.cs
++++ b/Source/Plugins/VisplaneExplorer/VPOManager.cs
+@@ -25,31 +25,31 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
+ 
+ 		#region ================== VPO bindings
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+ 		private static extern IntPtr VPO_NewContext();
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+ 		private static extern void VPO_DeleteContext(IntPtr handle);
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+ 		private static extern string VPO_GetError(IntPtr handle);
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+ 		private static extern int VPO_LoadWAD(IntPtr handle, string filename);
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+ 		private static extern int VPO_OpenMap(IntPtr handle, string mapname, ref bool isHexen);
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+ 		private static extern void VPO_FreeWAD(IntPtr handle);
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+ 		private static extern void VPO_CloseMap(IntPtr handle);
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+ 		private static extern void VPO_OpenDoorSectors(IntPtr handle, int dir);
+ 
+-		[DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
++		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+ 		private static extern int VPO_TestSpot(IntPtr handle, int x, int y, int dz, int angle, ref int visplanes, ref int drawsegs, ref int openings, ref int solidsegs);
+ 
+ 		#endregion

@@ -1,0 +1,8 @@
+*.sw*
+*.bak
+\#*#
+help/
+info/
+result
+/.dir-locals.el
+/.editorconfig
