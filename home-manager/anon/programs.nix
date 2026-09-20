@@ -243,6 +243,7 @@
       icu # for fruityprime
       libice # for fruityprime
       libsm # for fruityprime
+      unshield # extract cab files, for the oldunreal's ut2004 installer
 
       ## OpenMPT ##
       coreutils
